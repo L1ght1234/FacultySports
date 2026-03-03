@@ -1,0 +1,43 @@
+@using FacultySports.MVC.Models.Enrollment
+@model IEnumerable<EnrollmentViewModel>
+
+@{
+    ViewData["Title"] = "Enrollments";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="mb-0">@ViewData["Title"]</h1>
+        <div class="text-muted">Track participant enrollments</div>
+    </div>
+    <div>
+        <a asp-action="Create" class="btn btn-primary">New Enrollment</a>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Participant</th>
+                <th>Section</th>
+                <th>Enrollment Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var e in Model)
+            {
+                <tr>
+                    <td class="fw-bold">@e.ParticipantName</td>
+                    <td>@e.SectionName</td>
+                    <td>@(e.Date?.ToString("yyyy-MM-dd") ?? "—")</td>
+                    <td class="text-nowrap">
+                        <a asp-action="Edit" asp-route-id="@e.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@e.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

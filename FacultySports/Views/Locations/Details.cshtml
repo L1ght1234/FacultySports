@@ -1,0 +1,32 @@
+@using FacultySports.MVC.Models.Location
+@model LocationViewModel
+
+@{
+    ViewData["Title"] = "Location Details";
+}
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title">@Model.Name</h3>
+                <hr />
+
+                <dl class="row">
+                    <dt class="col-sm-3">Name</dt>
+                    <dd class="col-sm-9">@Model.Name</dd>
+                    <dt class="col-sm-3">City</dt>
+                    <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.CityName) ? "—" : Model.CityName)</dd>
+                </dl>
+
+                <div class="mt-4 d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-outline-secondary">Back</a>
+                    <div class="gap-2">
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

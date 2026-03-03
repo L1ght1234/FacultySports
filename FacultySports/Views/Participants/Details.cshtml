@@ -1,0 +1,34 @@
+@using FacultySports.MVC.Models.Participant
+@model ParticipantViewModel
+
+@{
+    ViewData["Title"] = "Participant Details";
+}
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title">@Model.FirstName @Model.LastName</h3>
+                <hr />
+
+                <dl class="row">
+                    <dt class="col-sm-3">First Name</dt>
+                    <dd class="col-sm-9">@Model.FirstName</dd>
+                    <dt class="col-sm-3">Last Name</dt>
+                    <dd class="col-sm-9">@Model.LastName</dd>
+                    <dt class="col-sm-3">Phone</dt>
+                    <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.Phone) ? "—" : Model.Phone)</dd>
+                </dl>
+
+                <div class="mt-4 d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-outline-secondary">Back</a>
+                    <div class="gap-2">
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

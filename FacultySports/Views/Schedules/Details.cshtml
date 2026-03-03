@@ -1,0 +1,53 @@
+@using FacultySports.MVC.Models.Schedule
+@model ScheduleViewModel
+
+@{
+    ViewData["Title"] = "Schedule Details";
+}
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title">@GetDayName(Model.DayOfWeek)</h3>
+                <hr />
+
+                <dl class="row">
+                    <dt class="col-sm-3">Day</dt>
+                    <dd class="col-sm-9">@GetDayName(Model.DayOfWeek)</dd>
+                    <dt class="col-sm-3">Start Time</dt>
+                    <dd class="col-sm-9">@Model.StartTime.ToString("HH:mm")</dd>
+                    <dt class="col-sm-3">End Time</dt>
+                    <dd class="col-sm-9">@Model.EndTime.ToString("HH:mm")</dd>
+                    <dt class="col-sm-3">Location</dt>
+                    <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.LocationName) ? "—" : Model.LocationName)</dd>
+                </dl>
+
+                <div class="mt-4 d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-outline-secondary">Back</a>
+                    <div class="gap-2">
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string GetDayName(int dayOfWeek)
+    {
+        return dayOfWeek switch
+        {
+            0 => "Sunday",
+            1 => "Monday",
+            2 => "Tuesday",
+            3 => "Wednesday",
+            4 => "Thursday",
+            5 => "Friday",
+            6 => "Saturday",
+            _ => "Unknown"
+        };
+    }
+}

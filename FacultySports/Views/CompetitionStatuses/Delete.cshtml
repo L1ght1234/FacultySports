@@ -1,0 +1,30 @@
+@using FacultySports.MVC.Models.CompetitionStatus
+@model CompetitionStatusViewModel
+
+@{
+    ViewData["Title"] = "Delete Competition Status";
+}
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card shadow-sm border-danger">
+            <div class="card-body">
+                <h3 class="card-title text-danger mb-3">@ViewData["Title"]</h3>
+
+                <div class="alert alert-warning" role="alert">
+                    <strong>Are you sure?</strong><br />
+                    You're about to delete the status <strong>@Model.Name</strong>. This action cannot be undone.
+                </div>
+
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" name="id" value="@ViewContext.RouteData.Values["id"]" />
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,71 @@
+@using FacultySports.MVC.Models.Schedule
+@model CreateScheduleViewModel
+
+@{
+    ViewData["Title"] = "Edit Schedule";
+}
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title mb-3">@ViewData["Title"]</h3>
+
+                <form asp-action="Edit" method="post">
+                    <input type="hidden" name="id" value="@ViewContext.RouteData.Values["id"]" />
+
+                    <div class="mb-3">
+                        <label asp-for="DayOfWeek" class="form-label">Day of Week</label>
+                        <select asp-for="DayOfWeek" class="form-select">
+                            <option value="0">Sunday</option>
+                            <option value="1">Monday</option>
+                            <option value="2">Tuesday</option>
+                            <option value="3">Wednesday</option>
+                            <option value="4">Thursday</option>
+                            <option value="5">Friday</option>
+                            <option value="6">Saturday</option>
+                        </select>
+                        <span asp-validation-for="DayOfWeek" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="StartTime" class="form-label">Start Time</label>
+                            <input asp-for="StartTime" class="form-control" type="time" />
+                            <span asp-validation-for="StartTime" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="EndTime" class="form-label">End Time</label>
+                            <input asp-for="EndTime" class="form-control" type="time" />
+                            <span asp-validation-for="EndTime" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="LocationId" class="form-label">Location</label>
+                        <select asp-for="LocationId" class="form-select">
+                            <option value="">-- Select Location --</option>
+                            @if (ViewBag.Locations != null)
+                            {
+                                foreach (var l in (IEnumerable<FacultySports.Contracts.Location.LocationDto>)ViewBag.Locations)
+                                {
+                                    <option value="@l.Id">@l.Name</option>
+                                }
+                            }
+                        </select>
+                        <span asp-validation-for="LocationId" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

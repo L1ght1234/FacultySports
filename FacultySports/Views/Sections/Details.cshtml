@@ -1,0 +1,29 @@
+@using FacultySports.MVC.Models.Section
+@model SectionViewModel
+
+@{
+    ViewData["Title"] = "Section Details";
+}
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title">@Model.Name</h3>
+                <hr />
+                <p>@(string.IsNullOrEmpty(Model.Description) ? "No description available." : Model.Description)</p>
+
+                <div class="mt-4 d-flex justify-content-between">
+                    <div>
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+                        <a asp-action="Index" class="btn btn-outline-secondary ms-2">Back</a>
+                    </div>
+                    <div>
+                        <a asp-controller="Enrollments" asp-action="Create" asp-route-sectionId="@Model.Id" class="btn btn-success me-2">Enroll Participant</a>
+                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
