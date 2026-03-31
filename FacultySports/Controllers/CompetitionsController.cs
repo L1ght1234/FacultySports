@@ -5,9 +5,12 @@ using FacultySports.Application.Commands.Competition.Create;
 using FacultySports.Application.Commands.Competition.Update;
 using FacultySports.Application.Commands.Competition.Delete;
 using FacultySports.Contracts.Competition;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
+using FacultySports.Domain.Entities;
 using FacultySports.MVC.Models.Competition;
+using FacultySports.MVC.Services;
+using MediatR;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FacultySports.MVC.Controllers;
 
@@ -15,11 +18,13 @@ public class CompetitionsController : Controller
 {
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
+    private readonly IDataPortServiceFactory<Competition> _competitionDataPortServiceFactory;
 
-    public CompetitionsController(IMediator mediator, IMapper mapper)
+    public CompetitionsController(IMediator mediator, IMapper mapper, IDataPortServiceFactory<Competition> competitionDataPortServiceFactory)
     {
         _mediator = mediator;
         _mapper = mapper;
+        _competitionDataPortServiceFactory = competitionDataPortServiceFactory;
     }
 
     public async Task<IActionResult> Index()
@@ -28,6 +33,50 @@ public class CompetitionsController : Controller
         var dtos = res.IsSuccess ? res.Value : Enumerable.Empty<CompetitionDto>();
         var vm = _mapper.Map<IEnumerable<CompetitionViewModel>>(dtos);
         return View(vm);
+    }
+
+    [HttpGet]
+    public IActionResult Import()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Import(IFormFile competitionsFile, CancellationToken cancellationToken)
+    {
+        if (competitionsFile is null || competitionsFile.Length == 0)
+        {
+            ModelState.AddModelError(string.Empty, "Please select an Excel file to upload.");
+            return View();
+        }
+
+        var contentType = competitionsFile.ContentType;
+        if (!string.Equals(contentType, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", StringComparison.OrdinalIgnoreCase))
+        {
+            ModelState.AddModelError(string.Empty, "Only .xlsx files are supported.");
+            return View();
+        }
+
+        var importService = _competitionDataPortServiceFactory.GetImportService(contentType);
+        using var stream = competitionsFile.OpenReadStream();
+        await importService.ImportFromStreamAsync(stream, cancellationToken);
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Export([FromQuery] string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", CancellationToken cancellationToken = default)
+    {
+        var exportService = _competitionDataPortServiceFactory.GetExportService(contentType);
+        var memoryStream = new MemoryStream();
+        await exportService.WriteToAsync(memoryStream, cancellationToken);
+        await memoryStream.FlushAsync(cancellationToken);
+        memoryStream.Position = 0;
+
+        return new FileStreamResult(memoryStream, contentType)
+        {
+            FileDownloadName = $"competitions_{DateTime.UtcNow:yyyy-MM-dd}.xlsx"
+        };
     }
 
     public async Task<IActionResult> Create()

@@ -1,7 +1,10 @@
 using System.Reflection;
 using FacultySports.Application;
+using FacultySports.Domain.Entities;
 using FacultySports.Infrastructure.Context;
 using FacultySports.Infrastructure.Repositories;
+using FacultySports.MVC.Services.Competitions;
+using FacultySports.MVC.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +13,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<SportsDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddInfrastructureRepositories();
+builder.Services.AddScoped<IDataPortServiceFactory<Competition>, CompetitionDataPortServiceFactory>();
 builder.Services.AddApplicationServices();
 builder.Services.AddAutoMapper(cfg => { }, Assembly.GetExecutingAssembly());
 
