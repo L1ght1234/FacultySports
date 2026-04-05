@@ -4,9 +4,11 @@ using FacultySports.Contracts.Participant;
 using FacultySports.MVC.Models.Enrollment;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FacultySports.MVC.Controllers;
 
+[Authorize]
 public class EnrollmentsController : Controller
 {
     private readonly IMediator _mediator;
@@ -18,6 +20,7 @@ public class EnrollmentsController : Controller
         _mapper = mapper;
     }
 
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Index()
     {
         var result = await _mediator.Send(new Application.Queries.Enrollment.GetAll.GetAllEnrollmentsQuery());
@@ -42,7 +45,7 @@ public class EnrollmentsController : Controller
         return View(vm);
     }
 
-    public async Task<IActionResult> Create(int? sectionId)
+    public async Task<IActionResult> Create(int? sectionId, string? returnUrl = null)
     {
         var model = new CreateEnrollmentViewModel
         {
@@ -61,17 +64,19 @@ public class EnrollmentsController : Controller
             var sectionsRes = await _mediator.Send(new Application.Queries.Section.GetAll.GetAllSectionsQuery());
             ViewBag.Sections = sectionsRes.IsSuccess ? sectionsRes.Value : Enumerable.Empty<Contracts.Section.SectionDto>();
         }
+        ViewBag.ReturnUrl = returnUrl ?? Url.Action("Index", "Sections");
         return View(model);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(CreateEnrollmentViewModel model)
+    public async Task<IActionResult> Create(CreateEnrollmentViewModel model, string? returnUrl = null)
     {
         if (!ModelState.IsValid)
         {
             var sectionRes = await _mediator.Send(new Application.Queries.Section.GetById.GetSectionByIdQuery(model.SectionId));
             ViewBag.SectionName = sectionRes.IsSuccess ? sectionRes.Value.Name : "";
+            ViewBag.ReturnUrl = returnUrl ?? Url.Action("Details", "Sections", new { id = model.SectionId });
             return View(model);
         }
 
@@ -111,6 +116,7 @@ public class EnrollmentsController : Controller
                 ModelState.AddModelError(string.Empty, string.Join(';', createResult.Errors.Select(e => e.Message)));
                 var sectionRes = await _mediator.Send(new Application.Queries.Section.GetById.GetSectionByIdQuery(model.SectionId));
                 ViewBag.SectionName = sectionRes.IsSuccess ? sectionRes.Value.Name : "";
+                ViewBag.ReturnUrl = returnUrl ?? Url.Action("Details", "Sections", new { id = model.SectionId });
                 return View(model);
             }
             participantId = createResult.Value.Id;
@@ -125,7 +131,8 @@ public class EnrollmentsController : Controller
 
         if (alreadyEnrolled)
         {
-            return RedirectToAction(nameof(Index));
+            TempData["Error"] = "This participant is already enrolled in the selected section.";
+            return Redirect(returnUrl ?? Url.Action("Details", "Sections", new { id = model.SectionId }));
         }
 
         var dto = new CreateEnrollmentDto
@@ -136,14 +143,16 @@ public class EnrollmentsController : Controller
         };
 
         var result = await _mediator.Send(new Application.Commands.Enrollment.Create.CreateEnrollmentCommand(dto));
-        if (result.IsSuccess) return RedirectToAction(nameof(Index));
+        if (result.IsSuccess) return Redirect(returnUrl ?? Url.Action("Details", "Sections", new { id = model.SectionId }));
 
         ModelState.AddModelError(string.Empty, string.Join(';', result.Errors.Select(e => e.Message)));
+        ViewBag.ReturnUrl = returnUrl ?? Url.Action("Details", "Sections", new { id = model.SectionId });
         var sectionResFinal = await _mediator.Send(new Application.Queries.Section.GetById.GetSectionByIdQuery(model.SectionId));
         ViewBag.SectionName = sectionResFinal.IsSuccess ? sectionResFinal.Value.Name : "";
         return View(model);
     }
 
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Edit(int id)
     {
         var res = await _mediator.Send(new Application.Queries.Enrollment.GetById.GetEnrollmentByIdQuery(id));
@@ -160,6 +169,7 @@ public class EnrollmentsController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Edit(int id, CreateEnrollmentViewModel model)
     {
         if (!ModelState.IsValid) return View(model);
@@ -176,6 +186,7 @@ public class EnrollmentsController : Controller
         return View(model);
     }
 
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
     {
         var res = await _mediator.Send(new Application.Queries.Enrollment.GetById.GetEnrollmentByIdQuery(id));
@@ -186,6 +197,7 @@ public class EnrollmentsController : Controller
 
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var result = await _mediator.Send(new Application.Commands.Enrollment.Delete.DeleteEnrollmentCommand(id));

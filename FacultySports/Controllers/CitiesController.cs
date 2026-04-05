@@ -8,9 +8,11 @@ using FacultySports.Contracts.City;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using FacultySports.MVC.Models.City;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FacultySports.MVC.Controllers;
 
+[Authorize(Roles = "Admin")]
 public class CitiesController : Controller
 {
     private readonly IMediator _mediator;

@@ -11,9 +11,12 @@
         <h1 class="mb-0">@ViewData["Title"]</h1>
         <div class="text-muted">List of available sections</div>
     </div>
-    <div>
-        <a asp-action="Create" class="btn btn-primary">Add Section</a>
-    </div>
+    @if (User.IsInRole("Admin"))
+    {
+        <div>
+            <a asp-action="Create" class="btn btn-primary">Add Section</a>
+        </div>
+    }
 </div>
 
 @if (TempData["Error"] != null)
@@ -32,9 +35,12 @@
                                 <div class="mt-3 d-flex justify-content-end align-items-center">
                                     <div>
                                         <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary me-1">Details</a>
-                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary me-1">Edit</a>
-                                        <a asp-controller="Enrollments" asp-action="Create" asp-route-sectionId="@item.Id" class="btn btn-sm btn-outline-success me-1">Enroll</a>
-                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                                        @if (User.IsInRole("Admin"))
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary me-1">Edit</a>
+                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                                        }
+                                        <a asp-controller="Enrollments" asp-action="Create" asp-route-sectionId="@item.Id" asp-route-returnUrl="@Url.Action("Index", "Sections")" class="btn btn-sm btn-outline-success me-1">Enroll</a>
                                     </div>
                                 </div>
                             </div>

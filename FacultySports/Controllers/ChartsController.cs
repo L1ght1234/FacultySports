@@ -1,11 +1,13 @@
 using FacultySports.Infrastructure.Context;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FacultySports.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Roles = "Admin")]
 public class ChartsController : ControllerBase
 {
     private readonly SportsDbContext _context;

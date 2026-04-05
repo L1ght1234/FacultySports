@@ -11,9 +11,11 @@ using FacultySports.MVC.Services;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FacultySports.MVC.Controllers;
 
+[Authorize]
 public class CompetitionsController : Controller
 {
     private readonly IMediator _mediator;
@@ -36,6 +38,7 @@ public class CompetitionsController : Controller
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public IActionResult Import()
     {
         return View();
@@ -43,6 +46,7 @@ public class CompetitionsController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Import(IFormFile competitionsFile, CancellationToken cancellationToken)
     {
         if (competitionsFile is null || competitionsFile.Length == 0)
@@ -65,6 +69,7 @@ public class CompetitionsController : Controller
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Export([FromQuery] string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", CancellationToken cancellationToken = default)
     {
         var exportService = _competitionDataPortServiceFactory.GetExportService(contentType);
@@ -79,6 +84,7 @@ public class CompetitionsController : Controller
         };
     }
 
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create()
     {
         ViewBag.Sections = (await _mediator.Send(new Application.Queries.Section.GetAll.GetAllSectionsQuery())).Value;
@@ -89,6 +95,7 @@ public class CompetitionsController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create(CreateCompetitionViewModel model)
     {
         if (!ModelState.IsValid)
@@ -118,6 +125,7 @@ public class CompetitionsController : Controller
         return View(vm);
     }
 
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Edit(int id)
     {
         var res = await _mediator.Send(new GetCompetitionByIdQuery(id));
@@ -132,6 +140,7 @@ public class CompetitionsController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Edit(int id, CreateCompetitionViewModel model)
     {
         if (!ModelState.IsValid)
@@ -154,6 +163,7 @@ public class CompetitionsController : Controller
         return View(model);
     }
 
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
     {
         var res = await _mediator.Send(new GetCompetitionByIdQuery(id));
@@ -164,6 +174,7 @@ public class CompetitionsController : Controller
 
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var result = await _mediator.Send(new DeleteCompetitionCommand(id));

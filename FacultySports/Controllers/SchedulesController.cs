@@ -8,9 +8,11 @@ using FacultySports.Contracts.Schedule;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using FacultySports.MVC.Models.Schedule;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FacultySports.MVC.Controllers;
 
+[Authorize(Roles = "Admin")]
 public class SchedulesController : Controller
 {
     private readonly IMediator _mediator;

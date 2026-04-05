@@ -8,9 +8,11 @@ using FacultySports.Contracts.Participant;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using FacultySports.MVC.Models.Participant;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FacultySports.MVC.Controllers;
 
+[Authorize(Roles = "Admin")]
 public class ParticipantsController : Controller
 {
     private readonly IMediator _mediator;

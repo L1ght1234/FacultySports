@@ -19,6 +19,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IParticipantRepository, ParticipantRepository>();
         services.AddScoped<IScheduleRepository, ScheduleRepository>();
         services.AddScoped<ISectionRepository, SectionRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
 
         services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
 

@@ -1,10 +1,11 @@
 ﻿using FacultySports.Domain.Entities;
 using System.Reflection;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace FacultySports.Infrastructure.Context;
 
-public partial class SportsDbContext : DbContext
+public partial class SportsDbContext : IdentityDbContext<User>
 {
     public SportsDbContext(DbContextOptions<SportsDbContext> options)
         : base(options)
@@ -22,6 +23,7 @@ public partial class SportsDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
         OnModelCreatingPartial(modelBuilder);

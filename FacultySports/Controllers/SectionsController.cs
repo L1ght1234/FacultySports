@@ -7,9 +7,11 @@ using FacultySports.Application.Commands.Section.Delete;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using FacultySports.MVC.Models.Section;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FacultySports.MVC.Controllers;
 
+[Authorize]
 public class SectionsController : Controller
 {
     private readonly IMediator _mediator;
@@ -31,6 +33,7 @@ public class SectionsController : Controller
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public IActionResult Create()
     {
         return View(new CreateSectionViewModel());
@@ -38,6 +41,7 @@ public class SectionsController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create(CreateSectionViewModel model)
     {
         if (!ModelState.IsValid) return View(model);
@@ -65,6 +69,7 @@ public class SectionsController : Controller
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Edit(int id)
     {
         var result = await _mediator.Send(new GetSectionByIdQuery(id));
@@ -76,6 +81,7 @@ public class SectionsController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Edit(SectionViewModel model)
     {
         if (!ModelState.IsValid) return View(model);
@@ -90,6 +96,7 @@ public class SectionsController : Controller
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
     {
         var result = await _mediator.Send(new GetSectionByIdQuery(id));
@@ -101,6 +108,7 @@ public class SectionsController : Controller
 
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var result = await _mediator.Send(new DeleteSectionCommand(id));

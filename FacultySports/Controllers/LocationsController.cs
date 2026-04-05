@@ -9,9 +9,11 @@ using FacultySports.Contracts.Location;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using FacultySports.MVC.Models.Location;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FacultySports.MVC.Controllers;
 
+[Authorize(Roles = "Admin")]
 public class LocationsController : Controller
 {
     private readonly IMediator _mediator;

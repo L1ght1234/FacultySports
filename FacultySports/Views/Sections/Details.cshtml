@@ -15,12 +15,18 @@
 
                 <div class="mt-4 d-flex justify-content-between">
                     <div>
-                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+                        }
                         <a asp-action="Index" class="btn btn-outline-secondary ms-2">Back</a>
                     </div>
                     <div>
-                        <a asp-controller="Enrollments" asp-action="Create" asp-route-sectionId="@Model.Id" class="btn btn-success me-2">Enroll Participant</a>
-                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
+                        <a asp-controller="Enrollments" asp-action="Create" asp-route-sectionId="@Model.Id" asp-route-returnUrl="@Url.Action("Details", "Sections", new { id = Model.Id })" class="btn btn-success me-2">Enroll Participant</a>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
+                        }
                     </div>
                 </div>
             </div>
